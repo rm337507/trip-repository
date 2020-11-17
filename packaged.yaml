@@ -1,92 +1,112 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'study-datalake
+Transform: AWS::Serverless-2016-10-31
+Description: 'trip
 
-  Rest API to manage a Data Lake of study links
+  Rest API to manage trips
 
   '
 Globals:
   Function:
+    Timeout: 29
     MemorySize: 512
-    Timeout: 20
-Outputs:
-  CreateStudyRecordFunction:
-    Description: CreateStudyRecord Lambda Function ARN
-    Value:
-      Fn::GetAtt:
-      - CreateStudyRecordFunction
-      - Arn
-  GetStudyRecordsByIsConsumedFunction:
-    Description: GetStudyRecordsByIsConsumed Lambda Function ARN
-    Value:
-      Fn::GetAtt:
-      - GetStudyRecordsByIsConsumedFunction
-      - Arn
-  GetStudyRecordsByPeriodFunction:
-    Description: GetStudyRecordsByPeriod Lambda Function ARN
-    Value:
-      Fn::GetAtt:
-      - GetStudyRecordsByPeriodFunction
-      - Arn
-  GetStudyRecordsByTagFunction:
-    Description: GetStudyRecordsByTag Lambda Function ARN
-    Value:
-      Fn::GetAtt:
-      - GetStudyRecordsByTagFunction
-      - Arn
+    Environment:
+      Variables:
+        TABLE_NAME:
+          Ref: TripTable
+        ENDPOINT_OVERRIDE: http://localhost:8000
 Resources:
-  CreateStudyRecordFunction:
+  CreateTripRecordFunction:
+    Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://aws-sam-fiap-deployt/896a140ec24d1c84f917b82d6bdddd3f
+      CodeUri: s3://trip-22cld-deploy/a61c799fdc1ebf7664bd9eb806e147e8
+      Handler: br.com.iwe.handler.CreateTripRecord::handleRequest
+      Runtime: java8
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: TripTable
       Events:
-        CreateStudyRecord:
+        CreateTripRecord:
+          Type: Api
           Properties:
+            Path: /trip
             Method: post
-            Path: /study
-          Type: Api
-      Handler: br.com.iwe.handler.CreateStudyRecord::handleRequest
-      Runtime: java8
+  GetTripsByCountryFunction:
     Type: AWS::Serverless::Function
-  GetStudyRecordsByIsConsumedFunction:
     Properties:
-      CodeUri: s3://aws-sam-fiap-deployt/896a140ec24d1c84f917b82d6bdddd3f
-      Events:
-        GetStudyRecordsByIsConsumed:
-          Properties:
-            Method: get
-            Path: /study/{topic}/findByIsConsumed
-            RequestParameters:
-            - method.request.querystring.isconsumed
-          Type: Api
-      Handler: br.com.iwe.handler.GetStudyRecordsByIsConsumed::handleRequest
+      CodeUri: s3://trip-22cld-deploy/a61c799fdc1ebf7664bd9eb806e147e8
+      Handler: br.com.iwe.handler.GetTripsByCountry::handleRequest
       Runtime: java8
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: TripTable
+      Events:
+        GetTripsByCountry:
+          Type: Api
+          Properties:
+            Path: /trip/{country}
+            Method: get
+  GetTripsByCityFunction:
     Type: AWS::Serverless::Function
-  GetStudyRecordsByPeriodFunction:
     Properties:
-      CodeUri: s3://aws-sam-fiap-deployt/896a140ec24d1c84f917b82d6bdddd3f
-      Events:
-        GetStudyRecordsByPeriod:
-          Properties:
-            Method: get
-            Path: /study/{topic}/findByPeriod
-            RequestParameters:
-            - method.request.querystring.starts
-            - method.request.querystring.ends
-          Type: Api
-      Handler: br.com.iwe.handler.GetStudyRecordsByPeriod::handleRequest
+      CodeUri: s3://trip-22cld-deploy/a61c799fdc1ebf7664bd9eb806e147e8
+      Handler: br.com.iwe.handler.GetTripsByCity::handleRequest
       Runtime: java8
-    Type: AWS::Serverless::Function
-  GetStudyRecordsByTagFunction:
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: TripTable
+      Events:
+        GetTripsByCity:
+          Type: Api
+          Properties:
+            Path: /trip/{country}/findByCity
+            Method: get
+            RequestParameters:
+            - method.request.querystring.city
+  TripTable:
+    Type: AWS::DynamoDB::Table
     Properties:
-      CodeUri: s3://aws-sam-fiap-deployt/896a140ec24d1c84f917b82d6bdddd3f
-      Events:
-        GetStudyRecordsByTag:
-          Properties:
-            Method: get
-            Path: /study/{topic}/findByTag
-            RequestParameters:
-            - method.request.querystring.tag
-          Type: Api
-      Handler: br.com.iwe.handler.GetStudyRecordsByTag::handleRequest
-      Runtime: java8
-    Type: AWS::Serverless::Function
-Transform: AWS::Serverless-2016-10-31
+      TableName: trip
+      AttributeDefinitions:
+      - AttributeName: country
+        AttributeType: S
+      - AttributeName: date
+        AttributeType: S
+      - AttributeName: city
+        AttributeType: S
+      KeySchema:
+      - AttributeName: country
+        KeyType: HASH
+      - AttributeName: date
+        KeyType: RANGE
+      LocalSecondaryIndexes:
+      - IndexName: cityIndex
+        KeySchema:
+        - AttributeName: country
+          KeyType: HASH
+        - AttributeName: city
+          KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
+      BillingMode: PAY_PER_REQUEST
+Outputs:
+  CreateTripRecordFunction:
+    Description: CreateTripRecord Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - CreateTripRecordFunction
+      - Arn
+  GetTripsByCountryFunction:
+    Description: GetTripsByCountry Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - GetTripsByCountryFunction
+      - Arn
+  GetTripsByCityFunction:
+    Description: GetTripsByCity Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - GetTripsByCityFunction
+      - Arn

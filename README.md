@@ -2,7 +2,7 @@
 
 This is a sample application to demonstrate how to build an application on AWS Serverless Envinronment using the
 AWS SAM, Amazon API Gateway, AWS Lambda and Amazon DynamoDB.
-It also uses the DynamoDBMapper ORM structure to map Study items in a DynamoDB table to a RESTful API for managing Studies.
+It also uses the DynamoDBMapper ORM structure to map Trip items in a DynamoDB table to a RESTful API for managing Studies.
 
 
 ## Requirements
@@ -83,7 +83,7 @@ Next, the following command will create a Cloudformation Stack and deploy your S
 ```bash
 sam deploy \
     --template-file packaged.yaml \
-    --stack-name study-datalake \
+    --stack-name trip \
     --capabilities CAPABILITY_IAM
 ```
 
@@ -93,7 +93,7 @@ After deployment is complete you can run the following command to retrieve the A
 
 ```bash
 aws cloudformation describe-stacks \
-    --stack-name sam-orderHandler \
+    --stack-name trip \
     --query 'Stacks[].Outputs'
 ```
 
@@ -111,12 +111,12 @@ sam package \
 
 sam deploy \
     --template-file packaged.yaml \
-    --stack-name sam-orderHandler \
+    --stack-name trip \
     --capabilities CAPABILITY_IAM \
     --parameter-overrides MyParameterSample=MySampleValue
 
 aws cloudformation describe-stacks \
-    --stack-name sam-orderHandler --query 'Stacks[].Outputs'
+    --stack-name trip --query 'Stacks[].Outputs'
 ```
 
 ## Bringing to the next level
