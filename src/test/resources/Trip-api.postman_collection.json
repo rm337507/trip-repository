@@ -1,0 +1,86 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Trip-api.postman_collection",
+		"_postman_id": "a0047555-7536-f355-902a-2d9a2d3be6d1",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "createTripRecord",
+			"request": {
+				"url": "http://localhost:3000/trip",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"country\": \"Brasil\",\n\t\"city\": \"Fortaleza\",\n\t\"date\": \"2018/10/04\",\n\t\"reason\": \"teste\"\n}\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "findTripsByCity",
+			"request": {
+				"url": {
+					"raw": "http://localhost:3000/trip/Brasil/findByCity?city=Salvador",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"trip",
+						"Brasil",
+						"findByCity"
+					],
+					"query": [
+						{
+							"key": "city",
+							"value": "Salvador",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "findTripsByCountry",
+			"request": {
+				"url": "http://localhost:3000/trip/Brasil",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
